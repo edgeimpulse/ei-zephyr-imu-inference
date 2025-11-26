@@ -59,16 +59,6 @@ west flash --runner openocd
 
 ## Sensors Supported
 
-The firmware supports any IMU exposed through Zephyr's sensor API, including:
-
-| IMU | Zephyr Driver |
-|-----|---------------|
-| IIS2DLPC | `CONFIG_IIS2DLPC=y` |
-| LSM6DSOX / LSM6DSO | `CONFIG_LSM6DSOX=y` |
-| ISM330DHCX | `CONFIG_ISM330DHCX=y` |
-| BMI270 | `CONFIG_BMI270=y` |
-| ICM42688 | `CONFIG_ICM42688=y` |
-
 All sensors accessible through I²C/SPI + Zephyr sensor drivers are compatible.
 
 ## Project Structure
