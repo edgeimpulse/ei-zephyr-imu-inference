@@ -35,8 +35,7 @@
 #include "inference/inferencing.h"
 #include "edge-impulse-sdk/classifier/ei_run_classifier.h"
 #include "edge-impulse-sdk/dsp/numpy.hpp"
-#include "sensors/ei_accelerometer.h"
-#include "sensors/ei_inertial.h"
+#include "sensors/ei_microphone.h"
 
 static bool ei_run_inference(void);
 static bool ei_start_impulse(void);
@@ -91,7 +90,7 @@ bool ei_inference_sm(void)
     while(INFERENCE_STATE_STOP != state) {
         switch(state){
             case INFERENCE_STATE_SAMPLING:
-                ei_fusion_accelerometer_read_data(3);
+                ei_microphone_sample();
                 ei_sleep(EI_CLASSIFIER_INTERVAL_MS);
                 // wait for data
                 break;

@@ -46,7 +46,6 @@ int main(void)
     setvbuf(stdout, NULL, _IONBF, 0);
 
     ei_microphone_init();
-    ei_microphone_init();
 
     ei_inference_sm(); // run state machine
 
