@@ -1,4 +1,3 @@
-
 /* The Clear BSD License
  *
  * Copyright (c) 2025 EdgeImpulse Inc.
@@ -33,22 +32,48 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <zephyr/kernel.h>
-#include "sensors/ei_microphone.h"
-#include "sensors/ei_microphone.h"
-#include "inference/inferencing.h"
-#include <stdio.h>
+#ifndef EI_MICROPHONE_H
+#define EI_MICROPHONE_H
 
-int main(void)
-{
-    
-    // This is needed so that output of printf is output immediately without buffering
-    setvbuf(stdout, NULL, _IONBF, 0);
+#include <stdint.h>
+#include <stdbool.h>
 
-    ei_microphone_init();
-    ei_microphone_init();
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-    ei_inference_sm(); // run state machine
+/**
+ * @brief Initialize microphone interface
+ * @return true if successful
+ */
+bool ei_microphone_init(void);
 
-    return 0;
+/**
+ * @brief Start audio sampling
+ * @return true if successful
+ */
+bool ei_microphone_start(void);
+
+/**
+ * @brief Stop audio sampling
+ * @return true if successful
+ */
+bool ei_microphone_stop(void);
+
+/**
+ * @brief Check if audio sampling is active
+ * @return true if sampling
+ */
+bool ei_microphone_is_sampling(void);
+
+/**
+ * @brief Sample audio data and call callback
+ * @return true if successful
+ */
+bool ei_microphone_sample(void);
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif // EI_MICROPHONE_H
