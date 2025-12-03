@@ -34,8 +34,7 @@
  */
 
 #include <zephyr/kernel.h>
-#include "sensors/ei_accelerometer.h"
-#include "sensors/ei_inertial.h"
+#include "sensors/ei_microphone.h"
 #include "inference/inferencing.h"
 #include <stdio.h>
 
@@ -45,8 +44,7 @@ int main(void)
     // This is needed so that output of printf is output immediately without buffering
     setvbuf(stdout, NULL, _IONBF, 0);
 
-    ei_inertial_init();
-    ei_accelerometer_init();
+    ei_microphone_init();
 
     ei_inference_sm(); // run state machine
 

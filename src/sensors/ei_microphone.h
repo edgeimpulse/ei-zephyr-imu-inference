@@ -32,12 +32,48 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef EI_ACCELEROMETER_H
-#define EI_ACCELEROMETER_H
+#ifndef EI_MICROPHONE_H
+#define EI_MICROPHONE_H
 
-#define ACCEL_AXIS_SAMPLED          3
+#include <stdint.h>
+#include <stdbool.h>
 
-bool ei_accelerometer_init(void);
-void ei_fusion_accelerometer_read_data(int n_samples);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#endif /* EI_ACCELEROMETER_H */
+/**
+ * @brief Initialize microphone interface
+ * @return true if successful
+ */
+bool ei_microphone_init(void);
+
+/**
+ * @brief Start audio sampling
+ * @return true if successful
+ */
+bool ei_microphone_start(void);
+
+/**
+ * @brief Stop audio sampling
+ * @return true if successful
+ */
+bool ei_microphone_stop(void);
+
+/**
+ * @brief Check if audio sampling is active
+ * @return true if sampling
+ */
+bool ei_microphone_is_sampling(void);
+
+/**
+ * @brief Sample audio data and call callback
+ * @return true if successful
+ */
+bool ei_microphone_sample(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // EI_MICROPHONE_H
