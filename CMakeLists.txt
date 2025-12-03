@@ -5,12 +5,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 list(APPEND ZEPHYR_EXTRA_MODULES ${CMAKE_CURRENT_SOURCE_DIR}/model)
 
-# This firmware uses X-Nucleo IKS02A1 shield
-set(SHIELD x_nucleo_iks02a1)
-
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
-project(ei-zephyr-imu-inference)
+project(ei-zephyr-mic-kws-inference)
 
 include(utils/cmake/utils.cmake)
 
@@ -26,6 +23,5 @@ include_directories(${INCLUDES})
 
 # add all sources to the project
 target_sources(app PRIVATE src/main.cpp)
-target_sources(app PRIVATE src/sensors/ei_accelerometer.cpp)
-target_sources(app PRIVATE src/sensors/ei_inertial.cpp)
+target_sources(app PRIVATE src/sensorsei_microphone.cpp)
 target_sources(app PRIVATE src/inference/inferencing.cpp)
