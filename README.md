@@ -6,8 +6,8 @@ Drop in your model > build > flash > get real-time audio inference.
 ## Initialize This Repo
 
 ```bash
- west init https://github.com/edgeimpulse/ei-zephyr-imu-inference.git
-cd ei-zephyr-imu-inference
+ west init https://github.com/edgeimpulse/ei-zephyr-mic-kws-inference.git
+cd ei-zephyr-mic-kws-inference
 west update
 ```
 
