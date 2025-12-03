@@ -5,8 +5,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 list(APPEND ZEPHYR_EXTRA_MODULES ${CMAKE_CURRENT_SOURCE_DIR}/model)
 
-# This firmware uses X-Nucleo IKS02A1 shield
-set(SHIELD x_nucleo_iks02a1)
+if(DEFINED CONFIG_EI_IKS02A1) # using the edge-impulse-sdk-zephyr module
+    message(STATUS "CONFIG_EI_IKS02A1")
+    # This firmware uses X-Nucleo IKS02A1 shield
+    set(SHIELD x_nucleo_iks02a1)
+elseif(DEFINED CONFIG_EI_IKS01A3)
+    message(STATUS "CONFIG_EI_IKS01A3")
+    set(SHIELD x_nucleo_iks01a3)
+else()
+    message(FATAL_ERROR "No supported IMU shield defined! Please enable CONFIG_IKS02A1 or CONFIG_IKS01A3 in prj.conf")
+    exit(1)
+endif()
 
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
@@ -26,6 +35,11 @@ include_directories(${INCLUDES})
 
 # add all sources to the project
 target_sources(app PRIVATE src/main.cpp)
-target_sources(app PRIVATE src/sensors/ei_accelerometer.cpp)
-target_sources(app PRIVATE src/sensors/ei_inertial.cpp)
+if(DEFINED CONFIG_EI_IKS02A1)
+target_sources(app PRIVATE src/sensors/iks02a1/ei_accelerometer.cpp)
+target_sources(app PRIVATE src/sensors/iks02a1/ei_inertial.cpp)
+elseif(DEFINED CONFIG_EI_IKS01A3)
+target_sources(app PRIVATE src/sensors/iks01a3/ei_accelerometer.cpp)
+target_sources(app PRIVATE src/sensors/iks01a3/ei_inertial.cpp)
+endif()
 target_sources(app PRIVATE src/inference/inferencing.cpp)

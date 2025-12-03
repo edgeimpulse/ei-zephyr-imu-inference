@@ -6,7 +6,7 @@ Drop in your model > build > flash > get real-time motion inference.
 ## Initialize This Repo
 
 ```bash
- west init https://github.com/edgeimpulse/ei-zephyr-imu-inference.git
+west init https://github.com/edgeimpulse/ei-zephyr-imu-inference.git
 cd ei-zephyr-imu-inference
 west update
 ```
@@ -35,13 +35,27 @@ Your `model/` directory should contain:
 - `model-parameters/`
 - `tflite-model/`
 
+## Supported shield
+
+The project support the following sensor shield:
+- [X-NUCLEO-IKS02A1](https://www.st.com/en/evaluation-tools/x-nucleo-iks02a1.html) enabled passing `-DCONFIG_EI_IKS02A1=y`
+- [IKS01A3](https://www.st.com/en/evaluation-tools/x-nucleo-iks01a3.html) enabled passing `-DCONFIG_EI_IKS01A3=y`
+
 ## Build
 
-Choose your board (Example: Nucleo U585ZI):
+Choose your board and the shield you are targeting,
 
+For example: Nucleo U585ZI + IKS01A3
 ```bash
-west build --pristine -b nucleo_u585zi_q
+west build --pristine -b nucleo_u585zi_q -- -DCONFIG_EI_IKS01A3=y
 ```
+
+Or Renesas EK RA6M5 + IKS02A1
+```bash
+west build --pristine -b ek_ra6m5 -- -DCONFIG_EI_IKS02A1=y
+```
+> [!NOTE]
+> You need to define one of the supported shield otherwise the build will fail with an error.
 
 ## Flash
 

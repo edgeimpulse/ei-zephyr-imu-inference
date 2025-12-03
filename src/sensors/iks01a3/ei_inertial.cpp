@@ -32,70 +32,91 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* Include ----------------------------------------------------------------- */
 #include <zephyr/logging/log.h>
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
 #include <zephyr/drivers/sensor.h>
-#include "ei_accelerometer.h"
-#include "inference/inferencing.h"
+#include "sensors/ei_inertial.h"
 
-/* Constant defines -------------------------------------------------------- */
-#define CONVERT_G_TO_MS2    9.80665f
 
-const struct device *iis2dlpc;
+const struct device *const lsm6dso = DEVICE_DT_GET_ONE(st_lsm6dso);
 
-static void iis2dlpc_config(const struct device *iis2dlpc)
+static bool _is_present = false;
+
+static void lsm6dso_config(const struct device *lsm6dso)
 {
 	struct sensor_value odr_attr, fs_attr;
 
-	/* set IIS2DLPC accel/gyro sampling frequency to 1600 Hz */
-	odr_attr.val1 = 1600;
+	/* set LSM6DSO accel sampling frequency to 208 Hz */
+	odr_attr.val1 = 208;
 	odr_attr.val2 = 0;
 
-	if (sensor_attr_set(iis2dlpc, SENSOR_CHAN_ACCEL_XYZ,
+	if (sensor_attr_set(lsm6dso, SENSOR_CHAN_ACCEL_XYZ,
 			    SENSOR_ATTR_SAMPLING_FREQUENCY, &odr_attr) < 0) {
+
 		return;
 	}
 
-	sensor_g_to_ms2(2, &fs_attr);
+	sensor_g_to_ms2(16, &fs_attr);
 
-	if (sensor_attr_set(iis2dlpc, SENSOR_CHAN_ACCEL_XYZ,
+	if (sensor_attr_set(lsm6dso, SENSOR_CHAN_ACCEL_XYZ,
 			    SENSOR_ATTR_FULL_SCALE, &fs_attr) < 0) {
+
+		return;
+	}
+
+	/* set LSM6DSO gyro sampling frequency to 208 Hz */
+	odr_attr.val1 = 208;
+	odr_attr.val2 = 0;
+
+	if (sensor_attr_set(lsm6dso, SENSOR_CHAN_GYRO_XYZ,
+			    SENSOR_ATTR_SAMPLING_FREQUENCY, &odr_attr) < 0) {
+
+		return;
+	}
+
+	sensor_degrees_to_rad(250, &fs_attr);
+
+	if (sensor_attr_set(lsm6dso, SENSOR_CHAN_GYRO_XYZ,
+			    SENSOR_ATTR_FULL_SCALE, &fs_attr) < 0) {
+
 		return;
 	}
 }
 
-bool ei_accelerometer_init(void)
+bool ei_inertial_init(void)
 {
-    iis2dlpc = DEVICE_DT_GET_ONE(st_iis2dlpc);
-    if (!device_is_ready(iis2dlpc))
-    {
-        return false;
-    }
+	if (!device_is_ready(lsm6dso)) {
 
-    iis2dlpc_config(iis2dlpc);
+		return false;
+	}
+	_is_present = true;
+    lsm6dso_config(lsm6dso);
 
     return true;
 }
 
-static float acceleration_g[ACCEL_AXIS_SAMPLED];
-
-void ei_fusion_accelerometer_read_data(int n_samples)
+float *ei_fusion_inertial_read_data(int n_samples)
 {
-    struct sensor_value accel2[ACCEL_AXIS_SAMPLED];
+    struct sensor_value accel[3];
+    struct sensor_value gyro[3];
+    static float inertial[INERTIAL_AXIS_SAMPLED];
 
-    memset(acceleration_g, 0, ACCEL_AXIS_SAMPLED * sizeof(float));
+    memset(inertial, 0, INERTIAL_AXIS_SAMPLED * sizeof(float));
 
-    if (sensor_sample_fetch(iis2dlpc) < 0) {
+    if (sensor_sample_fetch(lsm6dso) < 0) {
 
     }
     else {
-        sensor_channel_get(iis2dlpc, SENSOR_CHAN_ACCEL_XYZ, accel2);
-        acceleration_g[0] = sensor_value_to_double(&accel2[0]);
-        acceleration_g[1] = sensor_value_to_double(&accel2[1]);
-        acceleration_g[2] = sensor_value_to_double(&accel2[2]);
-        ei_samples_callback(acceleration_g, ACCEL_AXIS_SAMPLED * sizeof(float));
+        sensor_channel_get(lsm6dso, SENSOR_CHAN_ACCEL_XYZ, accel);
+		sensor_channel_get(lsm6dso, SENSOR_CHAN_GYRO_XYZ, gyro);
+        inertial[0] = sensor_value_to_double(&accel[0]);
+        inertial[1] = sensor_value_to_double(&accel[1]);
+        inertial[2] = sensor_value_to_double(&accel[2]);
+        inertial[3] = sensor_value_to_double(&gyro[0]);
+        inertial[4] = sensor_value_to_double(&gyro[1]);
+        inertial[5] = sensor_value_to_double(&gyro[2]);
     }
 
+    return inertial;
 }
