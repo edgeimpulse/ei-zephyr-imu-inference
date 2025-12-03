@@ -37,10 +37,10 @@ Your `model/` directory should contain:
 
 ## Build
 
-Choose your board (Example: Nucleo U585ZI):
+Choose your board (Example: Nordic thingy53):
 
 ```bash
-west build --pristine -b nucleo_u585zi_q
+west build --pristine -b thingy53/nrf5340/cpuapp
 ```
 
 ## Flash
