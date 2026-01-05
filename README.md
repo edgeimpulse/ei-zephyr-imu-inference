@@ -140,23 +140,75 @@ list(APPEND ZEPHYR_EXTRA_MODULES ${CMAKE_CURRENT_SOURCE_DIR}/model)
 
 ## Troubleshooting
 
-**Module not found**
+### **Module not found**
 ```bash
 west update
 ```
 
-**Insufficient memory**
+### **Insufficient memory**
 ```properties
 # In prj.conf
 CONFIG_MAIN_STACK_SIZE=16384
 ```
 
-**Sensor not detected**
+### **Sensor not detected**
 ```properties
 # In prj.conf - enable debug logging
 CONFIG_I2C_LOG_LEVEL_DBG=y
 CONFIG_SENSOR_LOG_LEVEL_DBG=y
 ```
+
+
+### Cyclic Dependency Error
+
+**Symptom:**
+```
+CMake Error at .../zephyr/cmake/modules/zephyr_module.cmake:73 (message):
+  Unmet or cyclic dependencies in modules:
+  /path/to/your-project/model
+  depends on: ['edge-impulse-sdk-zephyr']
+```
+
+**Cause:**
+Your project has **two** `module.yml` files registering different parts of your application as Zephyr modules. This creates a hierarchical conflict where the module system can't determine the correct dependency resolution order.
+
+**How to Check:**
+From your project root, run:
+```bash
+find . -maxdepth 2 -name "module.yml"
+```
+
+You should see **only ONE** result:
+```
+./model/zephyr/module.yml  ✓ CORRECT
+```
+
+If you see **both** of these:
+```
+./zephyr/module.yml        DELETE THIS
+./model/zephyr/module.yml  KEEP THIS
+```
+
+**Fix:**
+Delete the `zephyr/module.yml` file at your project root:
+```bash
+rm zephyr/module.yml
+```
+
+Then run:
+```bash
+west update
+west build -b <your_board> -p
+```
+
+**Why This Happens:**
+- `model/zephyr/module.yml` correctly registers your trained ML model as a module
+- `zephyr/module.yml` incorrectly registers the entire application as a module
+- The build system finds the project-level module first, then encounters the model module nested inside, creating a circular dependency
+
+**Key Principle:**
+Only the `model` should be a Zephyr module. Your application project is a Zephyr **application**, not a module.
+
 
 ## Resources
 
