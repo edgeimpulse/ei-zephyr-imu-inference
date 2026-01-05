@@ -1,6 +1,6 @@
 # Edge Impulse IMU Inference on Zephyr
 
-This repository demonstrates how to run IMU-based Edge Impulse models on Zephyr using the **Edge Impulse Zephyr Module**.  
+This repository demonstrates how to run IMU-based Edge Impulse models on Zephyr using the **[Edge Impulse Zephyr Module](https://docs.edgeimpulse.com/hardware/deployments/run-zephyr-module)**.  
 Drop in your model > build > flash > get real-time motion inference.
 
 ## Initialize This Repo
